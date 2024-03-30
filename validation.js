@@ -3,16 +3,22 @@
 function validateForm() {
     var exercise = document.getElementById('exercise').value;
     var duration = document.getElementById('duration').value;
+    var exerciseError = document.getElementById('exerciseError');
+    var durationError = document.getElementById('durationError');
+    var isValid = true;
+
+    exerciseError.textContent = '';
+    durationError.textContent = '';
 
     if (exercise.trim() === '') {
-        alert('Please enter the exercise.');
-        return false;
+        exerciseError.textContent = 'Please enter the exercise.';
+        isValid = false;
     }
 
     if (isNaN(duration) || duration <= 0) {
-        alert('Please enter a valid positive duration.');
-        return false;
+        durationError.textContent = 'Please enter a valid positive duration.';
+        isValid = false;
     }
 
-    return true;
+    return isValid;
 }

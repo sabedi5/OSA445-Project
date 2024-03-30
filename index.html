@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,48 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health and Fitness Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="validation.js"></script>
 </head>
 <body>
     <header>
         <h1>Health and Fitness Tracker</h1>
-        <!-- Navigation links can go here -->
     </header>
 
     <main>
-        <!-- Workout logging form -->
         <section id="workout-form">
             <h2>Log Your Workout</h2>
-            <form action="#">
+            <form action="#" onsubmit="return validateForm()">
                 <label for="exercise">Exercise:</label>
                 <input type="text" id="exercise" name="exercise" required>
-                
+                <span id="exerciseError" class="error"></span>
+
                 <label for="duration">Duration (minutes):</label>
                 <input type="number" id="duration" name="duration" required>
-                
+                <span id="durationError" class="error"></span>
+
                 <label for="intensity">Intensity:</label>
                 <select id="intensity" name="intensity" required>
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
                 </select>
-                
+
                 <label for="notes">Notes:</label>
                 <textarea id="notes" name="notes"></textarea>
-                
+
                 <button type="submit">Log Workout</button>
             </form>
         </section>
 
-        <!-- Progress tracking -->
         <section id="progress">
             <h2>Track Your Progress</h2>
-            <!-- Graphs or charts can be added here -->
+            <canvas id="progressChart" width="400" height="200"></canvas>
         </section>
 
-        <!-- Goal setting -->
         <section id="goals">
             <h2>Set Your Goals</h2>
-            <!-- Goal setting form can be added here -->
+            <form id="goalForm" onsubmit="return saveGoal()">
+                <label for="goal">Goal:</label>
+                <input type="text" id="goal" name="goal" required>
+
+                <label for="deadline">Deadline:</label>
+                <input type="date" id="deadline" name="deadline" required>
+
+                <button type="submit">Set Goal</button>
+            </form>
         </section>
     </main>
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health and Fitness Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Health and Fitness Tracker</h1>
+        <!-- Navigation links can go here -->
+    </header>
+
+    <main>
+        <!-- Workout logging form -->
+        <section id="workout-form">
+            <h2>Log Your Workout</h2>
+            <form action="#">
+                <label for="exercise">Exercise:</label>
+                <input type="text" id="exercise" name="exercise" required>
+                
+                <label for="duration">Duration (minutes):</label>
+                <input type="number" id="duration" name="duration" required>
+                
+                <label for="intensity">Intensity:</label>
+                <select id="intensity" name="intensity" required>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                
+                <label for="notes">Notes:</label>
+                <textarea id="notes" name="notes"></textarea>
+                
+                <button type="submit">Log Workout</button>
+            </form>
+        </section>
+
+        <!-- Progress tracking -->
+        <section id="progress">
+            <h2>Track Your Progress</h2>
+            <!-- Graphs or charts can be added here -->
+        </section>
+
+        <!-- Goal setting -->
+        <section id="goals">
+            <h2>Set Your Goals</h2>
+            <!-- Goal setting form can be added here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Health and Fitness Tracker</p>
+    </footer>
+</body>
+</html>

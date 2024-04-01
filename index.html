@@ -1,4 +1,4 @@
-
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +7,8 @@
     <title>Health and Fitness Tracker</title>
     <link rel="stylesheet" href="styles.css">
     <script src="validation.js"></script>
+    <!-- Include Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -16,7 +18,7 @@
     <main>
         <section id="workout-form">
             <h2>Log Your Workout</h2>
-            <form action="#" onsubmit="return validateForm()">
+            <form action="#" onsubmit="return logWorkout()">
                 <label for="exercise">Exercise:</label>
                 <input type="text" id="exercise" name="exercise" required>
                 <span id="exerciseError" class="error"></span>
@@ -25,15 +27,9 @@
                 <input type="number" id="duration" name="duration" required>
                 <span id="durationError" class="error"></span>
 
-                <label for="intensity">Intensity:</label>
-                <select id="intensity" name="intensity" required>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
-
-                <label for="notes">Notes:</label>
-                <textarea id="notes" name="notes"></textarea>
+                <label for="month">Month:</label>
+                <input type="text" id="month" name="month" required>
+                <span id="monthError" class="error"></span>
 
                 <button type="submit">Log Workout</button>
             </form>
@@ -43,23 +39,86 @@
             <h2>Track Your Progress</h2>
             <canvas id="progressChart" width="400" height="200"></canvas>
         </section>
-
-        <section id="goals">
-            <h2>Set Your Goals</h2>
-            <form id="goalForm" onsubmit="return saveGoal()">
-                <label for="goal">Goal:</label>
-                <input type="text" id="goal" name="goal" required>
-
-                <label for="deadline">Deadline:</label>
-                <input type="date" id="deadline" name="deadline" required>
-
-                <button type="submit">Set Goal</button>
-            </form>
-        </section>
     </main>
 
     <footer>
         <p>&copy; 2024 Health and Fitness Tracker</p>
     </footer>
+
+    <!-- JavaScript code for updating and displaying the chart -->
+    <script>
+        // Initial progress data from Flask server-side
+        const progressData = {{ progress_data|tojson }};
+        
+        // Get canvas element for the chart
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        
+        // Create the progress chart
+        const progressChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: progressData.labels,
+                datasets: [{
+                    label: 'Workout Duration (minutes)',
+                    data: progressData.data,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        // Function to update progress chart
+        function updateChart(newData) {
+            // Add new data to progress data
+            progressData.labels.push(newData.month);
+            progressData.data.push(newData.duration);
+
+            // Update chart with new data
+            progressChart.update();
+        }
+
+        // AJAX request to update progress chart
+        function logWorkout() {
+            // Get workout data from the form
+            const exercise = document.getElementById('exercise').value;
+            const duration = document.getElementById('duration').value;
+            const month = document.getElementById('month').value;
+
+            // Workout data to be sent to Flask server
+            const workoutData = {
+                exercise: exercise,
+                duration: duration,
+                month: month
+            };
+            // Send AJAX POST request to Flask endpoint
+            fetch('/update_progress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(workoutData)
+            })
+            .then(response => response.json())
+            .then(updatedData => {
+                // Update progress chart with new data
+                updateChart(updatedData);
+            })
+            .catch(error => console.error('Error:', error));
+
+            // Prevent form submission
+            return false;
+        }
+    </script>
 </body>
 </html>
+

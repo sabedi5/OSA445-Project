@@ -1,0 +1,29 @@
+# main.py (Flask application)
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__, static_url_path='/static')
+
+# Initial progress data
+progress_data = {
+    "labels": [],
+    "data": []
+}
+
+@app.route('/')
+def index():
+    return render_template('index.html', progress_data=progress_data)
+
+@app.route('/update_progress', methods=['POST'])
+def update_progress():
+    # Parse the workout data from the AJAX request
+    workout_data = request.json
+    
+    # Update progress data
+    progress_data['labels'].append(workout_data['month'])
+    progress_data['data'].append(int(workout_data['duration']))
+
+    # Respond with updated progress data
+    return jsonify(progress_data)
+
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,17 +1,22 @@
 # main.py (Flask application)
 from flask import Flask, render_template, request, jsonify
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__)
 
 # Initial progress data
 progress_data = {
     "labels": [],
     "data": []
 }
+from flask import render_template, request, redirect, url_for
 
 @app.route('/')
 def index():
     return render_template('index.html', progress_data=progress_data)
+
+@app.route('/chart')
+def chart():
+    return render_template('chart.html', progress_data=progress_data)
 
 @app.route('/update_progress', methods=['POST'])
 def update_progress():

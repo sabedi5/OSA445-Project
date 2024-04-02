@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health and Fitness Tracker - Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Progress Chart</h1>
+    <canvas id="progressChart" width="400" height="200"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Retrieve progress data passed from Flask
+            const progressData = {{ progress_data|tojson }};
+            const ctx = document.getElementById('progressChart').getContext('2d');
+
+            // Render the chart using Chart.js
+            const progressChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: progressData.labels,
+                    datasets: [{
+                        label: 'Workout Duration (minutes)',
+                        data: progressData.data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

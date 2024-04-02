@@ -1,12 +1,11 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health and Fitness Tracker</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="validation.js"></script>
+    <link rel="stylesheet" href="static/index.css">
+    <script src="validation.js" defer></script>
     <!-- Include Chart.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -18,20 +17,42 @@
     <main>
         <section id="workout-form">
             <h2>Log Your Workout</h2>
-            <form action="#" onsubmit="return logWorkout()">
-                <label for="exercise">Exercise:</label>
-                <input type="text" id="exercise" name="exercise" required>
-                <span id="exerciseError" class="error"></span>
+            <form id="workoutForm">
+                <div class="form-group">
+                    <label for="exercise">Exercise:</label>
+                    <input type="text" id="exercise" name="exercise" required>
+                    <span class="error" id="exerciseError"></span>
+                </div>
 
-                <label for="duration">Duration (minutes):</label>
-                <input type="number" id="duration" name="duration" required>
-                <span id="durationError" class="error"></span>
+                <div class="form-group">
+                    <label for="duration">Duration (minutes):</label>
+                    <input type="number" id="duration" name="duration" required>
+                    <span class="error" id="durationError"></span>
+                </div>
 
-                <label for="month">Month:</label>
-                <input type="text" id="month" name="month" required>
-                <span id="monthError" class="error"></span>
+               <div class="form-group">
+    <label for="month">Month:</label>
+    <select id="month" name="month" required>
+        <option value="">Select Month</option>
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
+        <option value="April">April</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
+        <option value="August">August</option>
+        <option value="September">September</option>
+        <option value="October">October</option>
+        <option value="November">November</option>
+        <option value="December">December</option>
+    </select>
+    <span class="error" id="monthError"></span>
+</div>
 
-                <button type="submit">Log Workout</button>
+
+<button type="submit" onclick="window.location.href='/chart'">Log Workout</button>
+
             </form>
         </section>
 
@@ -45,80 +66,64 @@
         <p>&copy; 2024 Health and Fitness Tracker</p>
     </footer>
 
-    <!-- JavaScript code for updating and displaying the chart -->
     <script>
-        // Initial progress data from Flask server-side
-        const progressData = {{ progress_data|tojson }};
-        
-        // Get canvas element for the chart
-        const ctx = document.getElementById('progressChart').getContext('2d');
-        
-        // Create the progress chart
-        const progressChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: progressData.labels,
-                datasets: [{
-                    label: 'Workout Duration (minutes)',
-                    data: progressData.data,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const progressData = {{ progress_data|tojson }};
+            const ctx = document.getElementById('progressChart').getContext('2d');
+
+            const progressChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: progressData.labels,
+                    datasets: [{
+                        label: 'Workout Duration (minutes)',
+                        data: progressData.data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
                     }]
-                }
-            }
-        });
-
-        // Function to update progress chart
-        function updateChart(newData) {
-            // Add new data to progress data
-            progressData.labels.push(newData.month);
-            progressData.data.push(newData.duration);
-
-            // Update chart with new data
-            progressChart.update();
-        }
-
-        // AJAX request to update progress chart
-        function logWorkout() {
-            // Get workout data from the form
-            const exercise = document.getElementById('exercise').value;
-            const duration = document.getElementById('duration').value;
-            const month = document.getElementById('month').value;
-
-            // Workout data to be sent to Flask server
-            const workoutData = {
-                exercise: exercise,
-                duration: duration,
-                month: month
-            };
-            // Send AJAX POST request to Flask endpoint
-            fetch('/update_progress', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(workoutData)
-            })
-            .then(response => response.json())
-            .then(updatedData => {
-                // Update progress chart with new data
-                updateChart(updatedData);
-            })
-            .catch(error => console.error('Error:', error));
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
 
-            // Prevent form submission
-            return false;
-        }
+            const workoutForm = document.getElementById('workoutForm');
+            workoutForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const exercise = document.getElementById('exercise').value;
+                const duration = document.getElementById('duration').value;
+                const month = document.getElementById('month').value;
+
+                const workoutData = {
+                    exercise: exercise,
+                    duration: duration,
+                    month: month
+                };
+
+                fetch('/update_progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(workoutData)
+                })
+                .then(response => response.json())
+                .then(updatedData => {
+                    progressData.labels.push(updatedData.month);
+                    progressData.data.push(updatedData.duration);
+                    progressChart.update();
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
     </script>
 </body>
-</html>
-
+</html> 
